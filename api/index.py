@@ -9,7 +9,6 @@ from flask import Flask, jsonify, request, render_template, redirect, session
 from flask_cors import CORS
 from db import ReplDBSQL
 import os, datetime
-#import stripe
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -21,9 +20,6 @@ app.config['JSON_SORT_KEYS'] = False
 CORS(app)
 db = ReplDBSQL(os.getenv('DB_HOST'), os.getenv('DB_USER'), os.getenv('DB_PASS'), os.getenv('DB_DB'))
 
-#stripe.api_key = os.getenv("STRIPE_SEC")
-#STRIPE_PUB = os.getenv("STRIPE_PUB")
-# CONT: https://stripe.com/docs/legacy-checkout/flask
 
 db.run('''
 CREATE TABLE IF NOT EXISTS hits (
@@ -94,24 +90,6 @@ def app_setsession():
 def app_clearsession():
     session.clear()
     return redirect(request.args.get('callback', 'https://analytics.marcusj.org/analytics.marcusj.org'))
-
-'''
-@app.route('/charge', methods=['POST'])
-def app_charge():
-    customer = stripe.Customer.create(
-        email=request.form['email'],
-        source=request.form['stripeToken']
-    )
-    
-    charge = stripe.Charge.create(
-        customer=customer.id,
-        amount=799, #£7.99
-        currency='gbp',
-        description='dupl analytics - premium'
-    )
-
-    return redirect(request.form.get('callback', 'https://analytics.marcusj.org/analytics.marcusj.org?payment=success'))
-'''
 
 @app.route('/tos')
 def app_tos():

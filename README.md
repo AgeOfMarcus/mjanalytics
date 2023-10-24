@@ -2,7 +2,7 @@
 
 Dupl analytics. Originally created by [Marcus Weinberger](https://replit.com/@MarcusWeinberger) and [Rafi Asmoucha](https://replit.com/@rafrafraf) on Replit. 
 
-It has been moved to Vercel, now.
+It has been moved to Vercel, now. 
 
 ## Add mjanalytics to your website
 
