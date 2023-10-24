@@ -1,0 +1,760 @@
+<!DOCTYPE_html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <title>dupl analytics</title>
+
+    <link href="https://use.fontawesome.com/releases/v5.0.1/css/all.css" rel="stylesheet">
+
+    <link href='https://fonts.googleapis.com/css?family=IBM Plex Sans Condensed' rel='stylesheet'>
+
+    <link rel="shortcut icon" href="static/icon2.png"/>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <link href="static/template38.css" rel="stylesheet" type="text/css" />
+    <link href="static/search14.css" rel="stylesheet" type="text/css" />
+    <link href="static/graph21.css" rel="stylesheet" type="text/css" />
+</head>
+
+<style>
+    .bottomBar {
+        background-color: var(--primary-color);
+        width: calc(100vw - 60px);
+        height: 250px;
+        padding: 10px 30px;
+    }
+    .pfpcont {
+        overflow: hidden;
+        border-radius: 50%;
+        width: 40px;
+        min-width: 40px;
+        height: 40px;
+        margin-left: calc(5% + 10px);
+        margin-top: 20px;
+    }
+    .pfp {
+        width: 40px;
+        height: auto;
+    }
+
+    .info {
+        min-height: 100px;
+    }
+
+    .error {
+        background: linear-gradient(to right, #f20f22 20%, #d10f1f 30%, #ad0916 70%, #f20f22 20%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-fill-color: transparent;
+        background-size: 200% auto;
+        animation: gradient 7s infinite;
+        font-size: 60px;
+        font-weight: 900;
+    }
+
+    .newloader {
+        background: linear-gradient(-45deg, #8f8fb0, #5d5d75, #41414d, #23232b);
+        background-size: 400% 400%;
+        width: 40px !important;
+        max-width: unset !important;
+        height: 20px;
+        animation: gradient 2s ease infinite;
+        border-radius: 4px;
+        opacity: 0.3;
+        position: absolute;
+    }
+    .newloader2 {
+        background: linear-gradient(-45deg, #8f8fb0, #5d5d75, #41414d, #23232b);
+        background-size: 400% 400%;
+        height: 400px;
+        width: 80%;
+        min-width: -webkit-fill-available;
+        animation: gradient 3s ease infinite;
+        border-radius: 8px;
+        opacity: 0.3;
+        position: absolute;
+        margin-left: 10%;
+        margin-right: 10%;
+    }
+    @keyframes gradient {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    .cont {
+        margin-top: 15px !important;
+    }
+
+    .contents {
+        position: absolute;
+        height: 24px;
+    
+        width: 0% !important;
+    
+        white-space: nowrap;
+        overflow: hidden;
+    
+        background-color: #00c5e5;
+        transition: all 0.3s ease-in-out;
+        margin-left: -1px !important;
+        border-radius: 6px;
+        font-weight: 500 !important;
+        color: white !important;
+        opacity: 1;
+    }
+
+    .dchild:hover + .name .contents {
+        width: 100% !important;
+        overflow: visible;
+    }
+    .dchild:hover + .name span {
+        opacity: 0;
+    }
+    .dchild {
+        cursor: default;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: -webkit-fill-available !important;
+        max-width: unset !important;
+        max-height: 21px;
+        overflow: hidden;
+        background-color: rgba(150,150,150,0.3);
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+
+
+    .bottomBarWrapper {
+        display: flex;
+        justify-content: space-around;
+    }
+    .bottomInfo {
+        display: flex;
+        flex-direction: column;
+        width: fit-content;
+        height: 100%;
+        max-width: 30vw;
+        margin-top: 10px;
+    }
+    .bottomInfo ul {
+        list-style: none;
+        margin-left: 4px;
+        padding-left: 0;
+    }
+    .bottomInfo li {
+        margin-top: 5px;
+        font-size: 14px;
+        color: rgba(255,255,255,0.75);
+    }
+    .bottomTitle {
+        color: white;
+        font-size: 20px;
+        margin-top: 5px;
+        font-weight: 600;
+    }
+
+    @media only screen and (max-width: 992px) {
+        .bottomInfo:last-child {
+            display: none;
+        }
+        .bottomInfo {
+            max-width: 40vw;
+        }
+    }
+    @media only screen and (max-width: 576px) {
+        .bottomBarWrapper {
+            justify-content: left;
+        }
+        .bottomInfo {
+            display: none;
+        }
+    }
+
+
+    .dupl-auth-button {
+        background-color: transparent;
+        border-width: 0;
+        color: #f2f2f2;
+        cursor: pointer;
+        transition: all 0.25s;
+        font-size: 18px;
+        user-select: none;
+    }
+    .dupl-auth-button:hover {
+        color: #00c5e5;
+    }
+    
+    .navbtn {
+        cursor: pointer;
+        transition: all 0.25s;
+        margin-right: 4vw;
+        font-size: 18px;
+        user-select: none;
+    }
+    .navbtn:hover {
+        color: #00c5e5;
+    }
+</style>
+
+<body>
+    <div class='topBar'>
+        <div style='margin-left: 5%;'>
+            <img class='logo' src='static/dupl-analytics (1).png' style='height: 37.5px; width: auto; cursor: pointer;' onclick='window.location.pathname = "analytics.marcusj.org";'/>
+        </div>
+        
+        <div class="search autocomplete" style='width: 100%; margin-right: 2%;'>
+            <input id='searchBox' type="text" placeholder="enter domain" autocorrect="off" autocapitalize="off" spellcheck="false" style='width: 100%; font-style: italic;' />
+            <div class="button-src">
+                <button id='searchBtn'><span>search</span></button>
+            </div>
+        </div>
+
+        <div class='navbtn'><script src='//auth.marcusj.org/auth.js' authed='console.log' text="Login"></script></div>
+
+        <div class='navbtn'><i class="fas fa-user-circle fa-2x"></i></div>
+    </div>
+
+    <div class='middle'>
+        <div class='notFound' style='padding-top: 60px; display: none; text-align: center;'>
+            <div class='error'>404</div>
+            <h3>The site you have searched for is not in our records.</h3>
+        </div>
+
+        <div style='margin-top: 40px;'>
+            <div class='siteName' style='white-space: nowrap; overflow: hidden; text-overflow:ellipsis; font-size: 30px; margin-left: 8%; margin-bottom: 15px'></div>
+
+            <div style='width: fit-content; margin-left: auto; margin-right: 12%;'>
+                <button id='todaybtn' class='btn' style='display: none;'>today</button>
+                <button id='thisweekbtn' class='btn' style='display: none;'>this week</button>
+                <button id='thismonthbtn' class='btn' style='display: none;'>this month</button>
+            </div>
+        </div>
+        
+        <div class='dvcont' style='margin-bottom: 10px;'>
+            <!-- date range picker -->
+            <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%; margin-left: 5%;">
+                <i class="fa fa-calendar"></i>&nbsp;
+                <span></span> <i class="fa fa-caret-down"></i>
+            </div>
+
+            <div class='totalVisitors' style='color: rgba(255,255,255,0.6); font-size: 20px;'></div>
+        </div>
+
+        <div class='newloader2'></div>
+
+        <div class='chartWrapper' style='width: 80%; margin-left: 10%; margin-right: 10%;'>
+            <canvas id="myChart"></canvas>
+        </div>
+
+        <div class='info'>
+            <div class='referrer'>
+                <span style='color: rgba(255,255,255,0.8); font-weight: 600; font-size: 18px;'>Referrals</span>
+                <div class='cont'><div class='newloader' style='width: 95px !important'></div></div>
+            </div>
+            <div class='toppages'>
+                <span style='color: rgba(255,255,255,0.8); font-weight: 600; font-size: 18px;'>Top pages</span>
+                <div class='cont'><div class='newloader' style='width: 50px !important'></div></div>
+            </div>
+            <div class='devices'>
+                <span style='color: rgba(255,255,255,0.8); font-weight: 600; font-size: 18px;'>Devices</span>
+                <div class='cont'><div class='newloader' style='width: 145px !important'></div></div>
+            </div>
+            <div class='browsers'>
+                <span style='color: rgba(255,255,255,0.8); font-weight: 600; font-size: 18px;'>Browsers</span>
+                <div class='cont'><div class='newloader' style='width: 80px !important'></div></div>
+            </div>
+            <div class='countries'>
+                <span style='color: rgba(255,255,255,0.8); font-weight: 600; font-size: 18px;'>Countries</span>
+                <div class='cont'><div class='newloader' style='width: 60px !important'></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class='bottomBar'>
+        <div class='bottomBarWrapper'>
+            <div style='display: flex; flex-direction: column; height: 100%; width: fit-content'>
+                <div style='cursor: default;'>
+                    <img class='logo' src='static/dupl.png' style='height: 30px !important; width: auto; transform: translateY(10px);' />
+                    <span style='font-size: 20px; font-weight: 600; color: white;'>team</span>
+                </div>
+                <div style='display: flex; align-items: center;'>
+                    <div class='pfpcont'>
+                        <img class="pfp" src="https://storage.googleapis.com/replit/images/1601821666159_c0dcdf3d27cfe49d4ef1be6491fe5173.jpeg">
+                    </div>
+                    <div style='color: #f3f3f3; font-size: 14px; margin: 15px 0 0 4px; white-space: nowrap;'>Rafael Asmoucha</div>
+                </div>
+
+                <div style='display: flex; align-items: center;'>
+                    <div class='pfpcont'>
+                        <img class="pfp" src="https://storage.googleapis.com/replit/images/1659028551660_b3f1550ac7cb2f63c8082791f11b54db.png">
+                    </div>
+                    <div style='color: #f3f3f3; font-size: 14px; margin: 15px 0 0 4px; white-space: nowrap;'>Marcus Weinberger</div>
+                </div>
+            </div>
+
+            <div class='bottomInfo'> 
+                <div class='bottomTitle'>What we collect</div>
+                <ul>
+                    <li>We <b>DO NOT collect or store</b> IP addresses.</li>
+
+                    <li>We do collect and store whether visits are unique.</li>
+
+                    <li>We collect <b>user-agent</b> information, <b>referrers</b>, <b>device dimensions</b> and <b>timestamps.</b></li>
+                </ul>
+            </div>
+
+            <div class='bottomInfo'> 
+                <div class='bottomTitle'>Features</div>
+                <ul>
+                    <li>A <b>clean and easy</b> to understand dashboard!</li>
+                    <li>We don't use cookies or collect any personal data. So <b>no cookie banners!</b></li>
+                    <li>We will <b>never</b> sell your data! (looking at you google)</li>
+                </ul>
+                <div id='sponsor-widget'></div>
+            </div>
+        </div>
+    </div>
+
+    {% if home %}
+<script src="https://app.sponsor.ninja/widget.js"></script>
+<script>
+  new SponsorNinja({
+    id: '6408d768104011c8c74a0928',
+    target: '#sponsor-widget',
+    position: 'bottom'
+  })
+</script>
+    {% endif %}
+
+<script src='/analytics.js'></script>
+
+<script src='/static/api.js'></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js" integrity="sha512-HcBl0GSJvt4Qecm4srHapirUx0HJDi2zYXm6KUKNNUGdTIN9cBwakVZHWmRVj4MKgy1AChqhWGYcMDbRKgO0zg==" crossorigin="anonymous"></script>
+<script>
+
+var startCode = new Date().getTime();
+
+$('.siteName').html(`Analytics for <span onclick='window.location = "https://${window.location.pathname.split('/')[1]}";'>${window.location.pathname.split('/')[1]}</span>`)
+
+// search bar scripts --------------
+$('#searchBox').keypress(function (e) {
+    if (e.which == 13) {
+        search();
+    }
+});
+document.getElementById('searchBox').addEventListener('keyup', function (event) {
+    if ($('#searchBox').val().length <= 2) {
+        $('#awesomplete_list_1').hide();
+    }
+    else {
+        $('#awesomplete_list_1').show();
+    }
+});
+$('#searchBtn').on('click', () => {
+    search();
+});
+function search() {
+    var text = document.getElementById("searchBox").value;
+    var url = "https://analytics.marcusj.org/" + text;
+    location.replace(url);
+}
+
+// autocomplete search bar
+$.getJSON(`https://analytics.marcusj.org/api/getdomains`, (json) => {
+    var tmp = [];
+    for (var i in Object.values(json['domains'])) {
+        tmp.push(Object.values(json['domains'])[i]['Domain'])
+    }
+    var input = document.getElementById("searchBox");
+
+    var awesomplete = new Awesomplete(input, {
+        list: tmp,
+        minChars: 2,
+        maxItems: 5,
+    });
+    input.addEventListener("awesomplete-select", function (e) {
+        setTimeout(() => {
+            search();
+        },100)
+    })
+
+    $('ul[role=listbox]').addClass('hide');
+    $('#searchBox').css('height', '100%');
+})
+
+// hides and shows autocomplete list if clicked outside of search bar
+$(window).click(function() {
+    $('ul[role=listbox]').addClass('hide');
+});
+$('.search').click(function(event){
+    event.stopPropagation();
+    $('ul[role=listbox]').removeClass('hide');
+});
+// /search bar scripts --------------
+
+
+{% if home %} // if on home page
+console.log('home page')
+
+{% endif %}
+
+const infoHtml = $('.info').html();
+function getNewData(d1, d2, oneDay) {
+    var times = {};
+    startCode = new Date().getTime();
+
+    $('.chartWrapper').css('opacity', '0');
+    $('.totalVisitors').text('');
+    $('.newloader2').show();
+    $('.info').html(infoHtml);
+
+    $.getJSON(`https://analytics.marcusj.org/daterange?domain=${window.location.pathname.split('/')[1]}&d1=${d1}&d2=${d2}`, (json) => {
+        if (json['status'] === 200) {
+            
+            var graph = json['graph'];
+
+            if (oneDay) { // if single day
+                for (i=0; i<24; i++) {
+                    times[i] = {'views': 0, 'visits': 0};
+                }
+
+                graph.forEach((i) => {
+                    var hour = new Date(i['Timestamp']*1000).getHours();
+                    var vals = i;
+                    delete vals['Timestamp']
+                    times[hour] = vals;
+                })
+            }
+            else { // if date range
+                var getDaysArray = function(start, end) {
+                    for(var arr=[],dt=new Date(start); dt<=end; dt.setDate(dt.getDate()+1)){
+                        arr.push(new Date(dt).getTime());
+                    }
+                    return arr;
+                };
+                var daylist = getDaysArray(new Date(d1*1000),new Date(d2*1000));
+
+                daylist.forEach((i) => {
+                    times[i] = {'views': 0, 'visits': 0};
+                })
+
+                graph.forEach((i) => {
+                    var day = new Date(i['Timestamp']*1000).setHours(0,0,0,0);
+                    var vals = i;
+                    delete vals['Timestamp']
+                    times[day]['views'] = times[day]['views'] + vals['views'];
+                    times[day]['visits'] = times[day]['visits'] + vals['visits'];
+                })
+            }
+            makeGraph(times, oneDay);
+
+            placeInfo(json['info']);
+        }
+        else {
+            $('.siteName').hide();
+            $('.dvcont').hide();
+            $('.newloader2').hide();
+            $('.info').hide();
+            $('.notFound').fadeIn(500);
+        }
+    })  
+}
+function placeInfo(data) {
+    var referrer = {};
+    var toppages = {};
+    var devices = {};
+    var browsers = {};
+    var countries = {};
+
+    for (i=0; i<data.length; i++) {
+        referrer[data[i]['Referrer']] = (referrer[data[i]['Referrer']] || 0) + data[i]['Counter'];
+        toppages[data[i]['Route']] = (toppages[data[i]['Route']] || 0) + data[i]['Counter'];
+        devices[data[i]['Device']] = (devices[data[i]['Device']] || 0) + data[i]['Counter'];
+        browsers[data[i]['Browser']] = (browsers[data[i]['Browser']] || 0) + data[i]['Counter'];
+        countries[data[i]['Location']] = (countries[data[i]['Location']] || 0) + data[i]['Counter'];
+        
+    }
+    
+    insertInto('.referrer', referrer, 2);
+    insertInto('.toppages', toppages, 1, true);
+    insertInto('.devices', devices, 4);
+    insertInto('.browsers', browsers, 3);
+    insertInto('.countries', countries);
+}
+function insertInto(el, data, type=1, toppages=false) {
+    var html = '';
+    var orderDict = {};
+
+    var total = 0;
+    Object.keys(data).forEach((i) => {
+        total += data[i];
+    })
+
+    if (type === 1) {
+        Object.keys(data).forEach((i) => {
+            var percentage = Number(data[i]/total).toLocaleString(undefined,{style: 'percent', minimumFractionDigits:0});
+
+            var num = data[i];
+            if (num >= 10000) {
+                num = parseInt(num/1000) + 'k';
+            }
+
+            orderDict[`<div class='dchild'>${num}</div> <div class='name'><div class='contents' style='max-width: ${percentage} !important;'>${percentage}</div><span>${i}</span></div>`] = data[i];
+        })
+    }
+    if (type === 2) {
+        Object.keys(data).forEach((i) => {
+            var percentage = Number(data[i]/total).toLocaleString(undefined,{style: 'percent', minimumFractionDigits:0});
+
+            var num = data[i];
+            if (num >= 1000) {
+                num = parseInt(num/100) + 'k';
+            }
+
+            if (i == "undefined") {
+                orderDict[`<div class='dchild'>${num}</div> <div class='name'><div class='contents' style='max-width: ${percentage} !important;'>${percentage}</div><span>search</span></div>`] = data[i];
+            }
+            else {
+                orderDict[`<div class='dchild'>${num}</div> <div class='name' style='cursor: pointer;' onclick='window.location="https://${i}";'><div class='contents' style='max-width: ${percentage} !important;'>${percentage}</div><span>${i}</span></div>`] = data[i];
+            }
+        })
+    }
+    if (type === 3) {
+        var browsers = ['chrome','edge','firefox','safari'];
+
+        Object.keys(data).forEach((i) => {
+            var percentage = Number(data[i]/total).toLocaleString(undefined,{style: 'percent', minimumFractionDigits:0});
+            
+            var image = '/static/browser-images/other.png';
+            browsers.forEach((x) => {
+                if (i.toLowerCase().includes(x)) {
+                    image = `/static/browser-images/${x}.png`;
+                }
+            })
+
+            orderDict[`<div class='dchild'><img src='${image}' style='height: 40px; width: auto; transform: translate(-10%,20%);' /></div> <div class='name'><div class='contents' style='max-width: ${percentage} !important;'>${i}</div><span>${percentage}</span></div>`] = data[i];
+        })
+        
+    }
+    if (type === 4) {
+        Object.keys(data).forEach((i) => {
+            var percentage = Number(data[i]/total).toLocaleString(undefined,{style: 'percent', minimumFractionDigits:0});
+
+            orderDict[`<div class='dchild'><i class="fas fa-${i}" style='height: 21px; width: auto; margin-top: 4px;'></i></div> <div class='name'><div class='contents' style='max-width: ${percentage} !important;'>${i}</div><span>${percentage}</span></div>`] = data[i];
+        })
+    }
+    
+    orderDict = sort_object(orderDict);
+    Object.keys(orderDict).forEach((i) => {
+        html += i;
+    })
+
+    $(`${el} .cont`).html(html);
+}
+function sort_object(obj) {
+    items = Object.keys(obj).map(function(key) {
+        return [key, obj[key]];
+    });
+    items.sort(function(first, second) {
+        return second[1] - first[1];
+    });
+    sorted_obj={}
+    $.each(items, function(k, v) {
+        use_key = v[0]
+        use_value = v[1]
+        sorted_obj[use_key] = use_value
+    })
+    return(sorted_obj)
+} 
+function makeGraph(dict, oneDay) {
+    $('.chartWrapper').html('<canvas id="myChart"></canvas>');
+    $('.chartWrapper').css('opacity', '1');
+
+    var times = [];
+    var views = [];
+    var visits = [];
+    if (oneDay) {
+        for (const [ key, value ] of Object.entries(dict)) {
+            times.push(toHour(key));
+            
+            views.push(value['views']);
+            visits.push(value['visits']);
+        }
+    }
+    else {
+        var sameYear = true; // check if all dates are in the same year
+        var year = new Date(parseInt(Object.keys(dict)[0])).getFullYear();
+        for (const [ key, value ] of Object.entries(dict)) {
+            if (new Date(parseInt(key)).getFullYear() != year) {
+                sameYear = false;
+            }
+        }
+
+        for (const [ key, value ] of Object.entries(dict)) {
+            times.push(toDay(key, sameYear));
+            
+            views.push(value['views']);
+            visits.push(value['visits']);
+        }
+    }
+
+    $('.newloader2').hide();
+
+    $('.totalVisitors').text(`${views.reduce((a, b) => a + b, 0)} page views and ${visits.reduce((a, b) => a + b, 0)} visits`);
+
+    setChart(views, visits, times);
+
+    console.log(`graph took ${new Date().getTime() - startCode}ms to load`);
+}
+function toHour(num) {
+    if (num == 0) {
+        return '12am';
+    }
+    if (num == 12) {
+        return '12pm';
+    }
+
+    if (num <= 11) {
+        return `${num}am`;
+    }
+    else {
+        return `${num-12}pm`;
+    }
+}
+function toDay(timestamp, sameYear) {
+    var day = new Date(parseInt(timestamp)).toLocaleDateString();
+    if (sameYear) {
+        return day.substring(0, day.length - 5);
+    }
+    else {
+        return day;
+    }
+    
+}
+function setChart(views, visits, times) {
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'line',
+
+        // The data for our dataset
+        data: {
+            datasets: [{
+                label: 'Page views',
+                data: views,
+                type: 'line',
+                // this dataset is drawn on top
+                order: 1,
+                backgroundColor: 'transparent',
+                borderColor: 'rgba(160,102,227, 0.6)'
+            }, {
+                label: 'Visits',
+                data: visits,
+                type: 'line',
+                // this dataset is drawn below
+                order: 2,
+                backgroundColor: 'transparent',
+                borderColor: 'rgb(31, 147, 219)'
+            }],
+            labels: times
+        },
+
+        // Configuration options go here
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            elements: {
+                line: {
+                    tension: 0
+                }
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false
+            },
+            hover: {
+                mode: 'index',
+                intersect: false
+            },
+            hover: {
+                mode: 'index',
+                axis: 'y'
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    gridLines: {
+                        display: true,
+                        color: 'rgba(255,255,255,0.4)'
+                    },
+                    ticks: {
+                        autoSkip: true,
+                        maxRotation: 0,
+                        minRotation: 0
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    gridLines: {
+                        display: true,
+                        color: 'rgba(255,255,255,0.4)'
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                        precision: 0,
+                        maxTicksLimit: 10
+                    }
+                }]
+            }
+        }
+    });
+}
+
+// date range picker
+$(function() {
+    var start = moment().startOf('day');
+    var end = moment().endOf('day');
+
+    function cb(start, end) {
+        $('#reportrange span').html(start.format('YYYY/MM/DD') + ' to ' + end.format('YYYY/MM/DD'));
+        //console.log(start.unix(), end.unix())
+        var oneDay = start.isSame(end, 'day');
+        getNewData(start.unix(), end.unix(), oneDay)
+    }
+
+    $('#reportrange').daterangepicker({
+        startDate: start,
+        endDate: end,
+        ranges: { // --------------------- we can change date range buttons here
+           'Today': [moment(), moment()],
+           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+           'This Month': [moment().startOf('month'), moment().endOf('month')],
+           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+    }, cb);
+
+    cb(start, end);
+});
+</script>
+</body>

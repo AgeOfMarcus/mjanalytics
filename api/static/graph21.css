@@ -1,0 +1,157 @@
+#reportrange {
+    width: 400px !important;
+
+    max-width: fit-content;
+    background: #212a38 !important;
+    border-color: #212a38 !important;
+    border-radius: 3px !important;
+    color: #b3d1e3 !important;
+    height: fit-content;
+    margin-right: 5vw;
+}
+
+
+
+.dvcont {
+    display: flex;
+    align-items: center;
+    flex-flow: wrap;
+}
+
+.referrer, .toppages {
+    width: 27.5%;
+    flex-grow: 1;
+}
+
+.chartWrapper {
+    position: relative;
+    height: 400px;
+}
+
+
+
+.btn {
+    background-color: rgb(47, 107, 204);
+    border: 0 !important;
+    border-radius: 8px;
+    color: #f3f3f3;
+    transition: all 0.15s;
+    padding: 8px 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn:hover {
+    background-color: rgba(47, 107, 204, 0.8);
+}
+.btn:focus {
+    outline: 0;
+}
+
+
+
+.table-condensed, .daterangepicker {
+    color: black !important;
+}
+.daterangepicker {
+    background-color: #212a38;
+    border-color: #346380 !important;
+}
+.daterangepicker .ranges li:hover {
+    background-color: #1f638c !important;
+}
+.daterangepicker .ranges li {
+    color: #b3d1e3 !important;
+}
+.daterangepicker .calendar-table {
+    background-color: #133142 !important;
+    border-color: #27485c !important;
+}
+.daterangepicker .calendar-table td, .daterangepicker .calendar-table tr, .daterangepicker .calendar-table th {
+    color: #b3d1e3 !important;
+}
+.daterangepicker td.off, .daterangepicker td.off.start-date {
+    background-color: #133142 !important;
+}
+.daterangepicker td.end-date {
+     background-color: #357ebd !important;
+}
+.daterangepicker td.available:hover, .daterangepicker th.available:hover {
+    background-color: rgba(14, 78, 115, 0.3) !important;
+}
+.daterangepicker td.in-range, .daterangepicker td.off.in-range {
+    background-color: rgba(14, 78, 115, 0.5) !important;
+}
+.daterangepicker .calendar-table .next span, .daterangepicker .calendar-table .prev span {
+    border-color: #b3d1e3 !important;
+}
+.daterangepicker.show-ranges.ltr .drp-calendar {
+    border-width: 0 !important;
+}
+.daterangepicker .drp-selected {
+    color: #9cd1f0 !important;
+}
+.daterangepicker .drp-buttons {
+    border-color: rgba(73, 180, 242, 0.6) !important;
+}
+
+
+
+.info {
+    width: 90%;
+    height: fit-content;
+    margin-bottom: 50px;
+    margin-left: 5%;
+    display: flex;
+    position: relative;
+
+    flex-flow: wrap;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+.info div {
+    margin: 0 1%;
+
+    width: fit-content;
+    max-width: fit-content;
+    margin-bottom: 10px;
+}
+.info .cont {
+    display: grid;
+    grid-gap: 5px;
+
+    grid-template-columns: 40px calc(100% - 40px);
+    transform: translateX(0px);
+    width: fit-content;
+    position: relative;
+    z-index: 1;
+}
+.info .cont div {
+    color: #00c5e5;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+.info .cont .name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+
+    width: fit-content;
+    max-width: 100px;
+}
+.info .cont:hover {
+    z-index: 9999;
+}
+.info .cont .name:hover {
+    z-index: 9999;
+    overflow: visible;
+    text-overflow: unset;
+    cursor: default;
+}
+.info .cont .name:hover span {
+    background-color: #212a38;
+}
+.name::-webkit-scrollbar {
+    display: none;
+}
