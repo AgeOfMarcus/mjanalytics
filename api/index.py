@@ -39,6 +39,7 @@ class ReplDBSQL(object):
     def run(self, query, vals=()):
         conn = self.connect()
         cur = conn.cursor(dictionary=True)
+        cur.execute("SET SESSION MAX_EXECUTION_TIME=1000;") # fix "server gone away"
         cur.execute(query, vals)
         try:
             res = cur.fetchall()
