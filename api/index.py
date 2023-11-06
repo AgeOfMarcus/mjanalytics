@@ -9,6 +9,9 @@ from flask import Flask, jsonify, request, render_template, redirect, session
 from flask_cors import CORS
 from sqlalchemy import create_engine
 import os, datetime, sqlalchemy
+import pymysql
+
+pymysql.install_as_MySQLdb()
 
 class ReplDBSQL(object):
     def __init__(self, db_uri: str):
