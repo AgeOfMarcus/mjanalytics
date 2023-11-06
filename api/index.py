@@ -20,7 +20,7 @@ class ReplDBSQL(object):
 
     def run(self, query: str, vals: dict={}):
         conn = self.engine.connect()
-        query = conn.execute(sqlalchemy.text(query), **vals)
+        query = conn.execute(sqlalchemy.text(query), vals)
         try:
             res = query.fetchall()
         except:
