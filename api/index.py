@@ -119,7 +119,7 @@ def app_privacy():
 
 @app.route('/api/hit', methods=['POST'])
 def api_hit():
-    data = dict(request.json or request.get_json() or request.form)
+    data = dict(request.form or request.json or request.get_json())
     if db.run('SELECT Domain FROM domains WHERE Domain = :domain LIMIT 1', {'domain': data['Domain']}) == []:
         db.run('INSERT INTO domains (Domain) VALUES (:domain)', {'domain': data['Domain']})
     db.run('INSERT INTO hits (Domain, Route, Timestamp, Browser, Location, Device, Referrer) VALUES (:domain, :route, :ts, :browser, :loc, :device, :ref)', {
