@@ -7,51 +7,25 @@ I've had to migrate database host, and sadly the new host is signifigantly slowe
 '''
 from flask import Flask, jsonify, request, render_template, redirect, session
 from flask_cors import CORS
-import mysql.connector
-import os, datetime
-
-class MySQLCursorDict(mysql.connector.cursor.MySQLCursor):
-    def _row_to_python(self, rowdata, desc=None):
-        row = super(MySQLCursorDict, self)._row_to_python(rowdata, desc)
-        if row:
-            return dict(zip(self.column_names, row))
-        return None
+from sqlalchemy import create_engine
+import os, datetime, sqlalchemy
 
 class ReplDBSQL(object):
-    def __init__(self, host, user, password, db):
-        self.host = host
-        self.user = user
-        self.password = password
-        self.db = db
-    
-    def connect(self):
-        conn = mysql.connector.connect(
-            host=self.host,
-            user=self.user,
-            password=self.password,
-            db=self.db,
-            port=3307
-        )
-        return conn
-    def commit(self, conn):
-        conn.commit()
+    def __init__(self, db_uri: str):
+        self.db_uri = db_uri
+        self.engine = create_engine(db_uri, pool_size=5, pool_recycle=3600)
 
-    def run(self, query, vals=()):
-        conn = self.connect()
-        cur = conn.cursor(dictionary=True)
-        cur.execute("SET SESSION MAX_EXECUTION_TIME=1000;") # fix "server gone away"
-        cur.execute(query, vals)
+    def run(self, query: str, vals: dict={}):
+        conn = self.engine.connect()
+        query = conn.execute(sqlalchemy.text(query), **vals)
         try:
-            res = cur.fetchall()
+            res = query.fetchall()
         except:
             res = None
         conn.commit()
         conn.close()
-        self.commit(conn)
-        return res
-    
-    def clear(self):
-        self.run('DROP TABLE views')
+        if res:
+            return [row._mapping for row in res]
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -61,8 +35,7 @@ app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 app.config['JSON_SORT_KEYS'] = False
 
 CORS(app)
-db = ReplDBSQL(os.getenv('DB_HOST'), os.getenv('DB_USER'), os.getenv('DB_PASS'), os.getenv('DB_DB'))
-
+db = ReplDBSQL(os.getenv("DB_URI"))
 
 db.run('''
 CREATE TABLE IF NOT EXISTS hits (
@@ -96,7 +69,7 @@ def app_get(domain):
 
 @app.route('/getAllVisits/<domain>')
 def getAllVisits(domain):
-    visits = db.run('SELECT COUNT(CASE WHEN Domain != Referrer THEN 1 END) as visits FROM hits WHERE Domain = %s;', (domain,))
+    visits = db.run('SELECT COUNT(CASE WHEN Domain != Referrer THEN 1 END) as visits FROM hits WHERE Domain = :domain;', {'domain':domain})
 
     return jsonify({'visits':visits})
 
@@ -107,14 +80,14 @@ def daterange():
     d1 = int(data['d1'])
     d2 = int(data['d2'])
 
-    check = db.run('SELECT * FROM domains WHERE Domain = %s;', (domain,))
+    check = db.run('SELECT * FROM domains WHERE Domain = :domain;', {'domain':domain})
 
     if len(check) == 0:
         return jsonify({'status':404, 'message':'domain not found'})
     
-    graph = db.run('SELECT Timestamp, COUNT(ID) AS views, COUNT(CASE WHEN Domain != Referrer THEN 1 END) AS visits FROM hits WHERE Domain = %s AND Timestamp BETWEEN %s AND %s GROUP BY Timestamp', (domain, d1, d2))
+    graph = db.run('SELECT Timestamp, COUNT(ID) AS views, COUNT(CASE WHEN Domain != Referrer THEN 1 END) AS visits FROM hits WHERE Domain = :domain AND Timestamp BETWEEN :ts1 AND :ts2 GROUP BY Timestamp', {'domain':domain, 'ts1':d1, 'ts2':d2})
 
-    info = db.run('SELECT Route, Browser, Location, Device, Referrer, COUNT(*) as Counter FROM hits WHERE Domain = %s AND Timestamp BETWEEN %s AND %s GROUP BY Route, Browser, Location, Device, Referrer', (domain, d1, d2))
+    info = db.run('SELECT Route, Browser, Location, Device, Referrer, COUNT(*) as Counter FROM hits WHERE Domain = :domain AND Timestamp BETWEEN :ts1 AND :ts2 GROUP BY Route, Browser, Location, Device, Referrer', {'domain':domain, 'ts1':d1, 'ts2':d2})
 
     return jsonify({'status':200, 'graph':graph, 'info':info})
 
@@ -144,17 +117,17 @@ def app_privacy():
 @app.route('/api/hit', methods=['POST'])
 def api_hit():
     data = dict(request.json or request.get_json() or request.form)
-    if db.run('SELECT Domain FROM domains WHERE Domain = %s LIMIT 1', (data['Domain'],)) == []:
-        db.run('INSERT INTO domains (Domain) VALUES (%s)', (data['Domain'],))
-    db.run('INSERT INTO hits (Domain, Route, Timestamp, Browser, Location, Device, Referrer) VALUES (%s, %s, %s, %s, %s, %s, %s)', (
-        data['Domain'],
-        data['Route'],
-        datetime.datetime.now().replace(minute=0, second=0, microsecond=0).timestamp(),
-        data.get('Browser'),
-        data.get('Location'),
-        data.get('Device'),
-        data.get('Referrer')
-    ))
+    if db.run('SELECT Domain FROM domains WHERE Domain = :domain LIMIT 1', {'domain': data['Domain']}) == []:
+        db.run('INSERT INTO domains (Domain) VALUES (:domain)', {'domain': data['Domain']})
+    db.run('INSERT INTO hits (Domain, Route, Timestamp, Browser, Location, Device, Referrer) VALUES (:domain, :route, :ts, :browser, :loc, :device, :ref)', {
+        'domain': data['Domain'],
+        'route': data['Route'],
+        'ts': datetime.datetime.now().replace(minute=0, second=0, microsecond=0).timestamp(),
+        'browser': data.get('Browser'),
+        'loc': data.get('Location'),
+        'device': data.get('Device'),
+        'ref': data.get('Referrer')
+    })
     return 'ok'
 
 @app.route('/api/<domain>/query', methods=['POST'])
@@ -163,17 +136,17 @@ def api_domain_query(domain):
     valid_operaters = ['=', '>=', '<=', '!=']
     queries = request.json or request.get_json() or []
     query_list = []
-    values = []
+    values = {}
     for q in queries:
         try:
             if q['key'] in valid_keys and q['op'] in valid_operaters:
-                query_list.append(f'{q["key"]} {q["op"]} %s')
-                values.append(q['val'])
+                query_list.append(f'{q["key"]} {q["op"]} :v{len(values)}')
+                values[f'v{len(values)}'] = q['val']
         except Exception as e:
             print(f'[!] err formatting query: {e}. Query: {q}')
     query_string = ' AND '.join(query_list)
-    query = 'SELECT * FROM hits WHERE Domain = %s' + (' AND ' if not values == [] else '') + query_string
-    res = db.run(query, (domain, *values))
+    query = 'SELECT * FROM hits WHERE Domain = :domain' + (' AND ' if not values == {} else '') + query_string
+    res = db.run(query, {'domain': domain, **values})
     return jsonify(res)
 
 @app.route('/api/getdomains')
