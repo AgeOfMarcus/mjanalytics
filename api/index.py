@@ -28,7 +28,7 @@ class ReplDBSQL(object):
         conn.commit()
         conn.close()
         if res:
-            return [row._mapping for row in res]
+            return [dict(row._mapping) for row in res]
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
