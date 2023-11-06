@@ -20,7 +20,7 @@ class ReplDBSQL(object):
 
     def run(self, query: str, vals: dict={}):
         conn = self.engine.connect()
-        query = conn.execute(sqlalchemy.text(query), **vals)
+        query = conn.execute(sqlalchemy.text(query), vals)
         try:
             res = query.fetchall()
         except:
@@ -38,7 +38,7 @@ app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 app.config['JSON_SORT_KEYS'] = False
 
 CORS(app)
-db = ReplDBSQL(os.getenv("DB_URI"))
+db = ReplDBSQL(os.getenv("DB_URI") or 'mysql://mjanalytics_lipscookon:52644576f9674aab178600c8a80e6d467c6a2dea@6dl.h.filess.io:3307/mjanalytics_lipscookon')
 
 db.run('''
 CREATE TABLE IF NOT EXISTS hits (
@@ -83,7 +83,7 @@ def daterange():
     d1 = int(data['d1'])
     d2 = int(data['d2'])
 
-    check = db.run('SELECT * FROM domains WHERE Domain = :d', {'d': domain})
+    check = db.run('SELECT Domain FROM domains WHERE Domain = :d LIMIT 1', {'d': domain})
 
     if len(check) == 0:
         return jsonify({'status':404, 'message':'domain not found'})
