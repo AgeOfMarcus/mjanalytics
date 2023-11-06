@@ -83,7 +83,7 @@ def daterange():
     d1 = int(data['d1'])
     d2 = int(data['d2'])
 
-    check = db.run('SELECT * FROM domains WHERE Domain = :domain;', {'domain':domain})
+    check = db.run('SELECT * FROM domains WHERE Domain = :d;', {'d': domain})
 
     if len(check) == 0:
         return jsonify({'status':404, 'message':'domain not found'})
