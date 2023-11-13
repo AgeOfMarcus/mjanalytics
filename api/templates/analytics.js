@@ -81,7 +81,7 @@ if (show != null) {
         getJSON("https://analytics.marcusj.org/getAllVisits/" + window.location.hostname, (s, r) => {
             var visits = r.visits[0].visits;
             var el = document.getElementById('analytics');
-            el.innerHTML = `<div style='display: flex; width: fit-content; height: 50px; padding: 6px 4px; border-radius: 5px; background-color: #1d2333; color: #f3f3f3; align-items: center; font-weight: 600; cursor: pointer;' onclick='window.location = "https://analytics.marcusj.org/${window.location.hostname}";'><img style='width: auto; height: inherit;' src='https://analytics.marcusj.org/static/dupl-analytics (1).png' /> <div>dupl analytics<br><span style='font-size: 14px; color: rgba(200,200,200,0.7);'>${visits} VISITS</span></div></div>`;
+            el.innerHTML = `<div style='display: flex; width: fit-content; height: 50px; padding: 6px 4px; border-radius: 5px; background-color: #1d2333; color: #f3f3f3; align-items: center; font-weight: 600; cursor: pointer;' onclick='window.location = "https://analytics.marcusj.org/${window.location.hostname}";'><img style='width: auto; height: inherit;' src='https://analytics.marcusj.org/static/dupl-analytics-1.png' /> <div>dupl analytics<br><span style='font-size: 14px; color: rgba(200,200,200,0.7);'>${visits} VISITS</span></div></div>`;
         })
     }
 }
